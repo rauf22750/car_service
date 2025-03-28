@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>My Vehicles</h2>
+    <a href="{% url 'car_register' %}" class="btn btn-primary">Register New Vehicle</a>
+</div>
+
+{% if cars %}
+<div class="row">
+    {% for car in cars %}
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">{{ car.make }} {{ car.model }}</h5>
+                <span class="badge bg-light text-dark">{{ car.registration_number }}</span>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <strong>Year:</strong> {{ car.year }}
+                    </div>
+                    <div class="col-6">
+                        <strong>Mileage:</strong> {{ car.mileage }} km
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <strong>Engine:</strong> {{ car.engine_size }} L
+                    </div>
+                    <div class="col-6">
+                        <strong>Fuel:</strong> {{ car.get_fuel_type_display }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <strong>MOT Expiry:</strong> 
+                        <span class="{% if car.is_mot_due %}text-danger{% endif %}">
+                            {{ car.mot_expiry_date }}
+                            {% if car.is_mot_due %}<i class="bi bi-exclamation-triangle"></i>{% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="d-flex justify-content-between">
+                    <a href="{% url 'car_detail' car.id %}" class="btn btn-primary">View Details</a>
+                    <a href="{% url 'service_history' car.id %}" class="btn btn-outline-primary">Service History</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="alert alert-info">
+    <p>You haven't registered any vehicles yet.</p>
+    <a href="{% url 'car_register' %}" class="btn btn-primary mt-2">Register Your First Vehicle</a>
+</div>
+{% endif %}
+{% endblock %}

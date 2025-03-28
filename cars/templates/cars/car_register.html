@@ -1,0 +1,56 @@
+
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Register a Vehicle</h4>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form.registration_number|as_crispy_field }}
+                            {{ form.make|as_crispy_field }}
+                            {{ form.model|as_crispy_field }}
+                            {{ form.year|as_crispy_field }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form.mileage|as_crispy_field }}
+                            {{ form.engine_size|as_crispy_field }}
+                            {{ form.fuel_type|as_crispy_field }}
+                            {{ form.mot_expiry_date|as_crispy_field }}
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary mt-3">Register Vehicle</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">My Vehicles</h4>
+            </div>
+            <div class="card-body">
+                {% if cars %}
+                <div class="list-group">
+                    {% for car in cars %}
+                    <a href="{% url 'car_detail' car.id %}" class="list-group-item list-group-item-action">
+                        {{ car.registration_number }} - {{ car.make }} {{ car.model }}
+                    </a>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p>You haven't registered any vehicles yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

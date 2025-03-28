@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Service Recommendations - {{ car.make }} {{ car.model }}</h2>
+    <span class="badge bg-primary fs-5">{{ car.registration_number }}</span>
+</div>
+
+<div class="card">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Recommended Services</h5>
+        <a href="{% url 'service_recommendations' car.id %}?refresh=1" class="btn btn-sm btn-light">Refresh Recommendations</a>
+    </div>
+    <div class="card-body">
+        {% if recommendations %}
+        <form method="post" action="{% url 'schedule_service' %}">
+            {% csrf_token %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th style="width: 50px;"></th>
+                            <th>Service</th>
+                            <th>Reason</th>
+                            <th>Recommended Date</th>
+                            <th>Status</th>
+                            <th class="text-end">Price</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for recommendation in recommendations %}
+                        <tr>
+                            <td>
+                                {% if recommendation.status == 'pending' %}
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="recommendation_ids" value="{{ recommendation.id }}" id="rec{{ recommendation.id }}">
+                                    <label class="form-check-label" for="rec{{ recommendation.id }}"></label>
+                                </div>
+                                {% endif %}
+                            </td>
+                            <td>{{ recommendation.service_type.name }}</td>
+                            <td>{{ recommendation.reason }}</td>
+                            <td>{{ recommendation.recommended_date }}</td>
+                            <td>
+                                {% if recommendation.status == 'pending' %}
+                                <span class="badge bg-warning">Pending</span>
+                                {% elif recommendation.status == 'scheduled' %}
+                                <span class="badge bg-info">Scheduled</span>
+                                {% elif recommendation.status == 'completed' %}
+                                <span class="badge bg-success">Completed</span>
+                                {% elif recommendation.status == 'declined' %}
+                                <span class="badge bg-danger">Declined</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end">£{{ recommendation.price }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="d-flex justify-content-between align-items-center mt-4">
+                <a href="{% url 'car_detail' car.id %}" class="btn btn-outline-primary">Back to Vehicle Details</a>
+                <button type="submit" class="btn btn-success" id="scheduleBtn" disabled>Schedule Selected Services</button>
+            </div>
+        </form>
+        
+        <script>
+            // Enable/disable the schedule button based on checkbox selection
+            document.addEventListener('DOMContentLoaded', function() {
+                const checkboxes = document.querySelectorAll('input[name="recommendation_ids"]');
+                const scheduleBtn = document.getElementById('scheduleBtn');
+                
+                checkboxes.forEach(function(checkbox) {
+                    checkbox.addEventListener('change', function() {
+                        const anyChecked = Array.from(checkboxes).some(cb => cb.checked);
+                        scheduleBtn.disabled = !anyChecked;
+                    });
+                });
+            });
+        </script>
+        {% else %}
+        <div class="alert alert-info">
+            <p>No service recommendations found for this vehicle.</p>
+            <p>This could be because:</p>
+            <ul>
+                <li>Your vehicle is up to date with all recommended services</li>
+                <li>Your vehicle is new and doesn't need services yet</li>
+                <li>Service types haven't been configured in the system</li>
+            </ul>
+            <a href="{% url 'service_recommendations' car.id %}?refresh=1" class="btn btn-primary mt-2">Check for Recommendations</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

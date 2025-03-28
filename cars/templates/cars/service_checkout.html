@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Service Checkout</h2>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Selected Services</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Vehicle</th>
+                                <th>Service</th>
+                                <th>Recommended Date</th>
+                                <th class="text-end">Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for recommendation in recommendations %}
+                            <tr>
+                                <td>{{ recommendation.car.registration_number }} ({{ recommendation.car.make }} {{ recommendation.car.model }})</td>
+                                <td>{{ recommendation.service_type.name }}</td>
+                                <td>{{ recommendation.recommended_date }}</td>
+                                <td class="text-end">£{{ recommendation.price }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th colspan="3" class="text-end">Total:</th>
+                                <th class="text-end">£{{ total_price }}</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Checkout</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" action="{% url 'confirm_checkout' %}">
+                    {% csrf_token %}
+                    {% for recommendation in recommendations %}
+                    <input type="hidden" name="recommendation_ids" value="{{ recommendation.id }}">
+                    {% endfor %}
+                    
+                    <div class="mb-3">
+                        <label for="service_date" class="form-label">Service Date</label>
+                        <input type="date" class="form-control" id="service_date" name="service_date" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="payment_method" class="form-label">Payment Method</label>
+                        <select class="form-select" id="payment_method" name="payment_method" required>
+                            <option value="">Select payment method</option>
+                            <option value="card">Credit/Debit Card</option>
+                            <option value="cash">Cash</option>
+                            <option value="invoice">Invoice</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="notes" class="form-label">Additional Notes</label>
+                        <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success">Confirm Booking</button>
+                        <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card mt-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Summary</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>Services:</span>
+                        <span>{{ recommendations|length }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>Vehicles:</span>
+                        <span>{{ vehicles|length }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>Subtotal:</span>
+                        <span>£{{ subtotal }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>VAT (20%):</span>
+                        <span>£{{ vat }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between fw-bold">
+                        <span>Total:</span>
+                        <span>£{{ total_price }}</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
