@@ -1,136 +1,175 @@
+# This is a representation of the HTML template
+"""
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
 
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>{{ car.make }} {{ car.model }} ({{ car.year }})</h2>
-    <span class="badge bg-primary fs-5">{{ car.registration_number }}</span>
+<h2>{{ car.make }} {{ car.model }} ({{ car.year }})</h2>
+<span class="badge bg-primary fs-5">{{ car.registration_number }}</span>
 </div>
 
 <div class="row">
-    <div class="col-md-4">
-        <div class="card mb-4">
-            <div class="card-header bg-primary text-white">
-                <h5 class="mb-0">Vehicle Details</h5>
-            </div>
-            <div class="card-body">
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item d-flex justify-content-between">
-                        <span>Make:</span>
-                        <span class="fw-bold">{{ car.make }}</span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between">
-                        <span>Model:</span>
-                        <span class="fw-bold">{{ car.model }}</span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between">
-                        <span>Year:</span>
-                        <span class="fw-bold">{{ car.year }}</span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between">
-                        <span>Engine Size:</span>
-                        <span class="fw-bold">{{ car.engine_size }} L</span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between">
-                        <span>Fuel Type:</span>
-                        <span class="fw-bold">{{ car.get_fuel_type_display }}</span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between">
-                        <span>MOT Expiry:</span>
-                        <span class="fw-bold {% if car.is_mot_due %}text-danger{% endif %}">
-                            {{ car.mot_expiry_date }}
-                            {% if car.is_mot_due %}<i class="bi bi-exclamation-triangle"></i>{% endif %}
-                        </span>
-                    </li>
-                </ul>
-            </div>
+<div class="col-md-4">
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Vehicle Details</h5>
         </div>
-
-        <div class="card">
-            <div class="card-header bg-primary text-white">
-                <h5 class="mb-0">Update Mileage</h5>
-            </div>
-            <div class="card-body">
-                <form method="post">
-                    {% csrf_token %}
-                    {{ mileage_form|crispy }}
-                    <button type="submit" class="btn btn-primary mt-3">Update</button>
-                </form>
-            </div>
+        <div class="card-body">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item d-flex justify-content-between">
+                    <span>Make:</span>
+                    <span class="fw-bold">{{ car.make }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                    <span>Model:</span>
+                    <span class="fw-bold">{{ car.model }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                    <span>Year:</span>
+                    <span class="fw-bold">{{ car.year }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                    <span>Engine Size:</span>
+                    <span class="fw-bold">{{ car.engine_size }} L</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                    <span>Fuel Type:</span>
+                    <span class="fw-bold">{{ car.get_fuel_type_display }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                    <span>Current Mileage:</span>
+                    <span class="fw-bold">{{ car.current_mileage }} km</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                    <span>MOT Expiry:</span>
+                    <span class="fw-bold {% if car.is_mot_due %}text-danger{% endif %}">
+                        {{ car.mot_expiry_date }}
+                        {% if car.is_mot_due %}<i class="bi bi-exclamation-triangle"></i>{% endif %}
+                    </span>
+                </li>
+            </ul>
         </div>
     </div>
 
-    <div class="col-md-8">
-        <div class="card mb-4">
-            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Service Recommendations</h5>
-                <a href="{% url 'service_recommendations' car.id %}?refresh=1" class="btn btn-sm btn-light">Refresh</a>
-            </div>
-            <div class="card-body">
-                {% if recommendations %}
-                <form method="post" action="{% url 'schedule_service' %}">
-                    {% csrf_token %}
-                    <div class="list-group">
-                        {% for recommendation in recommendations %}
-                        <div class="list-group-item">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="recommendation_ids" value="{{ recommendation.id }}" id="rec{{ recommendation.id }}">
-                                <label class="form-check-label" for="rec{{ recommendation.id }}">
-                                    <div class="d-flex w-100 justify-content-between">
-                                        <h5 class="mb-1">{{ recommendation.service_type.name }}</h5>
-                                        <span class="badge bg-primary">£{{ recommendation.price }}</span>
-                                    </div>
-                                    <p class="mb-1">{{ recommendation.reason }}</p>
-                                    <small>Recommended by: {{ recommendation.recommended_date }}</small>
-                                </label>
-                            </div>
-                        </div>
-                        {% endfor %}
-                    </div>
-                    <button type="submit" class="btn btn-success mt-3">Schedule Selected Services</button>
-                </form>
-                {% else %}
-                <p>No pending service recommendations.</p>
-                <a href="{% url 'service_recommendations' car.id %}?refresh=1" class="btn btn-primary">Check for Recommendations</a>
-                {% endif %}
-            </div>
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Update Mileage</h5>
         </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                {{ mileage_form|crispy }}
+                <button type="submit" class="btn btn-primary mt-3">Update</button>
+            </form>
+        </div>
+    </div>
 
-        <div class="card">
-            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Recent Service History</h5>
-                <a href="{% url 'service_history' car.id %}" class="btn btn-sm btn-light">View All</a>
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Mileage History</h5>
+        </div>
+        <div class="card-body">
+            {% if mileage_history %}
+            <div class="table-responsive">
+                <table class="table table-sm table-striped">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Mileage</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for record in mileage_history %}
+                        <tr>
+                            <td>{{ record.recorded_date }}</td>
+                            <td>{{ record.mileage }} km</td>
+                            <td>{{ record.notes|default:"-" }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
-            <div class="card-body">
-                {% if service_history %}
-                <div class="table-responsive">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Service</th>
-                                <th>Mileage</th>
-                                <th>Price</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for service in service_history|slice:":5" %}
-                            <tr>
-                                <td>{{ service.service_date }}</td>
-                                <td>{{ service.service_type.name }}</td>
-                                <td>{{ service.mileage_at_service }} km</td>
-                                <td>£{{ service.price_paid }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-                {% else %}
-                <p>No service history recorded yet.</p>
-                <a href="{% url 'service_history' car.id %}" class="btn btn-primary">Add Service Record</a>
-                {% endif %}
-            </div>
+            {% else %}
+            <p class="text-muted">No mileage history recorded yet.</p>
+            {% endif %}
         </div>
     </div>
 </div>
+
+<div class="col-md-8">
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Service Recommendations</h5>
+            <a href="{% url 'service_recommendations' car.id %}?refresh=1" class="btn btn-sm btn-light">Refresh</a>
+        </div>
+        <div class="card-body">
+            {% if recommendations %}
+            <form method="post" action="{% url 'schedule_service' %}">
+                {% csrf_token %}
+                <div class="list-group">
+                    {% for recommendation in recommendations %}
+                    <div class="list-group-item">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="recommendation_ids" value="{{ recommendation.id }}" id="rec{{ recommendation.id }}">
+                            <label class="form-check-label" for="rec{{ recommendation.id }}">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h5 class="mb-1">{{ recommendation.service_type.name }}</h5>
+                                    <span class="badge bg-primary">£{{ recommendation.price }}</span>
+                                </div>
+                                <p class="mb-1">{{ recommendation.reason }}</p>
+                                <small>Recommended by: {{ recommendation.recommended_date }}</small>
+                            </label>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <button type="submit" class="btn btn-success mt-3">Schedule Selected Services</button>
+            </form>
+            {% else %}
+            <p>No pending service recommendations.</p>
+            <a href="{% url 'service_recommendations' car.id %}?refresh=1" class="btn btn-primary">Check for Recommendations</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Recent Service History</h5>
+            <a href="{% url 'service_history' car.id %}" class="btn btn-sm btn-light">View All</a>
+        </div>
+        <div class="card-body">
+            {% if service_history %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Service</th>
+                            <th>Mileage</th>
+                            <th>Price</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for service in service_history|slice:":5" %}
+                        <tr>
+                            <td>{{ service.service_date }}</td>
+                            <td>{{ service.service_type.name }}</td>
+                            <td>{{ service.mileage_at_service }} km</td>
+                            <td>£{{ service.price_paid }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p>No service history recorded yet.</p>
+            <a href="{% url 'service_history' car.id %}" class="btn btn-primary">Add Service Record</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+</div>
 {% endblock %}
+"""

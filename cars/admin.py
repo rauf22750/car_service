@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Car, ServiceType, ServiceHistory, ServiceRecommendation
+from .models import Car, ServiceType, ServiceHistory, ServiceRecommendation ,MileageRecord
 
 @admin.register(Car)
 class CarAdmin(admin.ModelAdmin):
@@ -26,3 +26,12 @@ class ServiceRecommendationAdmin(admin.ModelAdmin):
     list_filter = ('service_type', 'status', 'recommended_date')
     search_fields = ('car__registration_number', 'service_type__name', 'reason')
     date_hierarchy = 'recommended_date'
+    
+# Add this to your existing admin.py file
+
+@admin.register(MileageRecord)
+class MileageRecordAdmin(admin.ModelAdmin):
+    list_display = ('car', 'mileage', 'recorded_date', 'recorded_time', 'notes')
+    list_filter = ('recorded_date',)
+    search_fields = ('car__registration_number', 'notes')
+    date_hierarchy = 'recorded_date'
